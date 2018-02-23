@@ -1,10 +1,12 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Main where
 
 import           Control.Monad      (when)
-import qualified Data.List          as L
 import qualified Data.Map           as M
 import           Data.Maybe
 import qualified Data.Text          as T
+import qualified Data.Text.IO       as T
 import           System.Environment (getArgs)
 import           System.IO
 
@@ -113,3 +115,7 @@ result credits = "結果: " ++ if judge credits
 -- If exist Groups which have short of Credits, make there's list.
 shortList :: [(Group, Bool, CreditNum)] -> [(Group, CreditNum)]
 shortList = map rmSnd3 . filter (not . snd3)
+
+
+hoge :: T.Text
+hoge = T.pack "a"
