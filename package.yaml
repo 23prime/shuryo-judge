@@ -1,0 +1,31 @@
+name:                shuryo-judge
+version:             0.1.0.0
+github:              "23prime/shuryo-judge"
+license:             BSD3
+author:              "23prime"
+maintainer:          "hoge@fuga.com"
+copyright:           "2018 23prime"
+
+extra-source-files:
+- README.md
+
+description:         Please see the README on Github at <https://github.com/23prime/shuryo-judge#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- containers
+- text
+
+library:
+  source-dirs: src
+
+executables:
+  shuryo-judge:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - shuryo-judge
