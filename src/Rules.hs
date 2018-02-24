@@ -1,4 +1,7 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Rules where
+
+import qualified Data.Text as T
 
 import           Csv
 import           Types
@@ -28,15 +31,18 @@ mkGroup cd
   | c == '5'    = "教科選択（研究）"
   | otherwise   = "教科専門（数学）"
   where
-    (f, a@(b : c : xs)) = splitAt 3 cd
+    (f, a)  = T.splitAt 3 cd
+    b       = T.head a
+    cs      = T.tail a
+    c       = T.head cs
 
 --------------------------
 -- Parse CSV -> Credits --
 --------------------------
-mkCredit :: [String] -> Credit
+mkCredit :: [T.Text] -> Credit
 mkCredit xs = Credit { code  = cd
                      , title = xs !! 3
-                     , num   = read (xs !! 4) :: Float
+                     , num   = read (T.unpack $ xs !! 4) :: Float
                      , grade = xs !! 7
                      , group = mkGroup cd
                      }

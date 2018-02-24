@@ -1,39 +1,27 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Csv where
 
-import           Data.List
+import qualified Data.Text as T
 
-type Csv = String
-
-split :: (a -> Bool) -> [a] -> ([a], [a])
-split _ [] = ([], [])
-split p xs
-  | null s    = (f, s)
-  | otherwise = (f, tail s)
-  where
-    (f, s) = break p xs
-
-splitAll :: (a -> Bool) -> [a] -> [[a]]
-splitAll _ [] = []
-splitAll p xs = h : splitAll p ts
-  where
-    (h, ts) = split p xs
+type Csv = T.Text
 
 -- CSV -> 配列
-csvReader :: Csv -> [[String]]
-csvReader = map (splitAll (== ',')) . lines
+csvReader :: Csv -> [[T.Text]]
+csvReader = map (T.split (== ',')) . T.lines
 
 -- CSV の各要素に "" がついてる場合
-csvReader' :: Csv -> [[String]]
-csvReader' = map (splitAll (== ',')) . lines . killQuot
+csvReader' :: Csv -> [[T.Text]]
+csvReader' = map (T.split (== ',')) . T.lines . killQuot
 
-killQuot :: String -> String
-killQuot = filter (/= '\"')
+killQuot :: T.Text -> T.Text
+killQuot = T.replace  "\"" ""
 
 -- 配列 -> CSV
-csvWriter :: [[String]] -> Csv
-csvWriter = unlines . map concatByCommas
+csvWriter :: [[T.Text]] -> Csv
+csvWriter = T.unlines . map concatByCommas
 
--- [String] にカンマを入れて Csv に
-concatByCommas :: [String] -> Csv
-concatByCommas []       = []
-concatByCommas (x : xs) = concat $ x : map (',' :) xs
+-- [T.Text] にカンマを入れて Csv に
+concatByCommas :: [T.Text] -> Csv
+concatByCommas []       = ""
+concatByCommas (x : xs) = T.concat $ x : map (',' `T.cons`) xs

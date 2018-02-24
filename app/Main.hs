@@ -19,30 +19,36 @@ main = do
   args <- getArgs
   let csvPath = head args
   withFile csvPath ReadMode $ \csvHandle -> do
-    csv <- hGetContents csvHandle
+    csv <- T.hGetContents csvHandle
     let credits = parseCsv csv
-    putStrLn "[修了要件]"
+    T.putStrLn "[修了要件]"
     mapM_ printGroupNum require
-    putStrLn $ "計: " ++ show (sum $ map snd require) ++ " 単位"
-    putStrLn "\n[あなたの修得した単位]"
+    T.putStrLn $ "計: " ++. showT (sum $ map snd require) ++. " 単位"
+    T.putStrLn "\n[あなたの修得した単位]"
     mapM_ (printGroupNum' credits) groupList
-    putStrLn $ "計: " ++ show (countCreditNum credits) ++ " 単位"
-    putStrLn $ '\n' : result credits
-    putStrLn "\n不足: "
+    T.putStrLn $ "計: " ++. showT (countCreditNum credits) ++. " 単位"
+    T.putStrLn $ '\n' `T.cons` result credits
+    T.putStrLn "\n不足: "
     mapM_ printGroupNum $ shortList $ judgeList credits
     return ()
 
 printGroupNum' :: Credits -> Group -> IO ()
 printGroupNum' credits grp = do
   let count = countCreditNum $ filterGroup credits grp
-  putStrLn $ grp ++ ": " ++ show count ++ " 単位"
+  T.putStrLn $ grp ++. ": " ++. showT count ++. " 単位"
 
 printGroupNum :: (Group, CreditNum) -> IO ()
-printGroupNum (grp, number) = putStrLn $ grp ++ ": " ++ show number ++ " 単位"
+printGroupNum (grp, number) = T.putStrLn $ grp ++. ": " ++. showT number ++. " 単位"
 
 parseCsv :: Csv -> Credits
 parseCsv = map mkCredit . tail . csvReader'
 
+------------------------
+-- Functions for Text --
+------------------------
+showT = T.pack . show
+
+(++.) = T.append
 
 --------------------------------------
 -- Count available number of Credit --
@@ -107,10 +113,10 @@ judge :: Credits -> Bool
 judge = all snd3 . judgeList
 
 -- Result whether shuryo or not.
-result :: Credits -> String
-result credits = "結果: " ++ if judge credits
-                             then "修了です"
-                             else "留年！ｗ"
+result :: Credits -> T.Text
+result credits = "結果: " ++. if judge credits
+                              then "修了です"
+                              else "留年！ｗ"
 
 -- If exist Groups which have short of Credits, make there's list.
 shortList :: [(Group, Bool, CreditNum)] -> [(Group, CreditNum)]
