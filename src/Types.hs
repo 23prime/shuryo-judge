@@ -1,3 +1,7 @@
+{-# LANGUAGE OverloadedStrings #-}
+
+module Types where
+
 -- CSV について
 -- 0  ID                     学籍番号
 -- 1  Name                   氏名
@@ -10,18 +14,9 @@
 -- 8  Course Category        科目区分
 -- 9  Semester Academic Year 年度
 -- 10 Semester status        開講区分（通常・集中）
-{-# LANGUAGE OverloadedStrings #-}
-
-module Types where
 
 import qualified Data.Text as T
-{-
-type Code      = String -- 科目番号
-type Title     = String -- 科目名
-type CreditNum = Float  -- 単位数
-type Grade     = String -- 評価
-type Group     = String -- 科目群
--}
+
 type Code      = T.Text -- 科目番号
 type Title     = T.Text -- 科目名
 type CreditNum = Float  -- 単位数

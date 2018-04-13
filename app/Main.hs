@@ -17,28 +17,29 @@ import           Types
 main :: IO ()
 main = do
   args <- getArgs
-  let csvPath = head args
+  let (csvPath, req) = if head args == "s"
+                       then (args !! 1, require')
+                       else (head args, require)
   withFile csvPath ReadMode $ \csvHandle -> do
     csv <- T.hGetContents csvHandle
     let credits = parseCsv csv
     T.putStrLn "[修了要件]"
-    mapM_ printGroupNum require
-    T.putStrLn $ "計: " ++. showT (sum $ map snd require) ++. " 単位"
+    mapM_ printGroupNum req
+    T.putStrLn $ "計: " +.+ showT (sum $ map snd req) +.+ " 単位"
     T.putStrLn "\n[あなたの修得した単位]"
-    mapM_ (printGroupNum' credits) groupList
-    T.putStrLn $ "計: " ++. showT (countCreditNum credits) ++. " 単位"
-    T.putStrLn $ '\n' `T.cons` result credits
+    mapM_ (printGroupNum' credits) $ groupList req
+    T.putStrLn $ "計: " +.+ showT (countCreditNum credits) +.+ " 単位"
+    T.putStrLn $ '\n' `T.cons` result credits req
     T.putStrLn "\n不足: "
-    mapM_ printGroupNum $ shortList $ judgeList credits
-    return ()
+    mapM_ printGroupNum $ shortList $ judgeList credits req
 
 printGroupNum' :: Credits -> Group -> IO ()
 printGroupNum' credits grp = do
   let count = countCreditNum $ filterGroup credits grp
-  T.putStrLn $ grp ++. ": " ++. showT count ++. " 単位"
+  T.putStrLn $ grp +.+ ": " +.+ showT count +.+ " 単位"
 
 printGroupNum :: (Group, CreditNum) -> IO ()
-printGroupNum (grp, number) = T.putStrLn $ grp ++. ": " ++. showT number ++. " 単位"
+printGroupNum (grp, number) = T.putStrLn $ grp +.+ ": " +.+ showT number +.+ " 単位"
 
 parseCsv :: Csv -> Credits
 parseCsv = map mkCredit . tail . csvReader'
@@ -48,7 +49,7 @@ parseCsv = map mkCredit . tail . csvReader'
 ------------------------
 showT = T.pack . show
 
-(++.) = T.append
+(+.+) = T.append
 
 --------------------------------------
 -- Count available number of Credit --
@@ -77,51 +78,48 @@ countCreditNum = sum . map availableCreditNum
 filterGroup :: Credits -> Group -> Credits
 filterGroup credits grp = filter (\x -> group x == grp) credits
 
--- Make all Group list.
-groupList = map fst require
-
 -- Difference between Yours and Required in a Gruop.
 -- ; (Required Number of Credits) - (Yours)
-difference :: Credits -> Group -> (Group, CreditNum)
-difference credits grp = (grp, req - number)
+difference :: Credits -> Group -> Require -> (Group, CreditNum)
+difference credits grp req = (grp, req' - number)
   where
     credits' = filterGroup credits grp
-    req    = fromJust $ M.lookup grp $ M.fromList require
-    number = countCreditNum credits'
+    req'     = fromJust $ M.lookup grp $ M.fromList req
+    number   = countCreditNum credits'
+
+-- Make all Group list.
+groupList = map fst
 
 -- Check difference in a Group.
-judgeGroup :: Credits -> Group -> (Group, Bool, CreditNum)
-judgeGroup credits grp
-  | dif <= 0   = (grp, True,  dif)
-  | otherwise  = (grp, False, dif) -- Then your Credits is short.
+judgeGroup :: Credits -> Group -> Require -> (Group, Bool, CreditNum)
+judgeGroup credits grp req
+  | dif <= 0  = (grp, True,  dif)
+  | otherwise = (grp, False, dif) -- Then your Credits is short.
   where
-    dif = snd $ difference credits grp
+    dif = snd $ difference credits grp req
 
 -- Take judgeGroup to each Gruops.
 -- And make list which have result of judgeGroup.
-judgeList :: Credits -> [(Group, Bool, CreditNum)]
-judgeList credits = map (judgeGroup credits) groupList
+judgeList :: Credits -> Require -> [(Group, Bool, CreditNum)]
+judgeList credits req = map (flip (judgeGroup credits) req) $ groupList req
 
-fst3 (x, _, _) = x
-snd3 (_, y, _) = y
-thr3 (_, _, z) = z
+fst3 (x, _, _)   = x
+snd3 (_, y, _)   = y
+thr3 (_, _, z)   = z
 rmSnd3 (x, y, z) = (x, z)
 
 -- judgeList have only True; You have enough Credits in all Groups.
 -- Then True.
-judge :: Credits -> Bool
-judge = all snd3 . judgeList
+judge :: Credits -> Require -> Bool
+judge credits = all snd3 . judgeList credits
 
 -- Result whether shuryo or not.
-result :: Credits -> T.Text
-result credits = "結果: " ++. if judge credits
-                              then "修了です"
-                              else "留年！ｗ"
+result :: Credits -> Require -> T.Text
+result credits req = "結果: " +.+
+  if judge credits req
+  then "修了です"
+  else "留年！ｗ"
 
 -- If exist Groups which have short of Credits, make there's list.
 shortList :: [(Group, Bool, CreditNum)] -> [(Group, CreditNum)]
 shortList = map rmSnd3 . filter (not . snd3)
-
-
-hoge :: T.Text
-hoge = T.pack "a"

@@ -19,9 +19,4 @@ killQuot = T.replace  "\"" ""
 
 -- 配列 -> CSV
 csvWriter :: [[T.Text]] -> Csv
-csvWriter = T.unlines . map concatByCommas
-
--- [T.Text] にカンマを入れて Csv に
-concatByCommas :: [T.Text] -> Csv
-concatByCommas []       = ""
-concatByCommas (x : xs) = T.concat $ x : map (',' `T.cons`) xs
+csvWriter = T.unlines . map (T.intercalate ", ")

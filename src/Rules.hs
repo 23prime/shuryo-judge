@@ -6,10 +6,12 @@ import qualified Data.Text as T
 import           Csv
 import           Types
 
+type Require = [(Group, CreditNum)]
+
 -----------
 -- Rules --
 -----------
-require :: [(Group, CreditNum)]
+require :: Require
 require = [ ("基礎科目", 1.0)
           , ("専攻共通 必修", 1.0)
           , ("専攻共通 選択", 4.0)
@@ -19,6 +21,15 @@ require = [ ("基礎科目", 1.0)
           , ("その他", 0.0)
           ]
 
+require' :: Require
+require' = [ ("基礎科目", 1.0)
+           , ("専攻共通 必修", 1.0)
+           , ("専攻共通 選択", 4.0)
+           , ("教科教育（数学教育）", 6.0)
+           , ("教科専門（数学）", 12.0)
+           , ("教科選択（研究）", 0.0)
+           , ("その他", 0.0)
+           ]
 
 mkGroup :: Code -> Group
 mkGroup cd
@@ -31,10 +42,10 @@ mkGroup cd
   | c == '5'    = "教科選択（研究）"
   | otherwise   = "教科専門（数学）"
   where
-    (f, a)  = T.splitAt 3 cd
-    b       = T.head a
-    cs      = T.tail a
-    c       = T.head cs
+    (f, a) = T.splitAt 3 cd
+    b      = T.head a
+    cs     = T.tail a
+    c      = T.head cs
 
 --------------------------
 -- Parse CSV -> Credits --
