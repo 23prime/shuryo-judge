@@ -1,0 +1,20 @@
+{ "version": "0.1.0",
+   "command": "cmd",
+   "isShellCommand": true,
+   "showOutput": "always",
+   "args": [ "/C" ],
+   "tasks":
+    [ { "taskName": "la"
+      , "suppressTaskName": true
+      , "args": [ "ls -la" ]
+      },
+      { "taskName": "build"
+      , "suppressTaskName": true
+      , "args": [ "stack build" ]
+      },
+      { "taskName": "exe"
+      , "suppressTaskName": true
+      , "args": [ "chcp 65001 && stack exec shuryo-judge sample.csv" ]
+      }
+    ]
+  }
