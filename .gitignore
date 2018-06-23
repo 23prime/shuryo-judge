@@ -2,4 +2,5 @@
 shuryo-judge.cabal
 *~
 sample*
+*.csv
 run.rb
