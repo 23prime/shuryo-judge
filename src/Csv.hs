@@ -6,17 +6,17 @@ import qualified Data.Text as T
 
 type Csv = T.Text
 
--- CSV -> 配列
+-- CSV -> List
 csvReader :: Csv -> [[T.Text]]
 csvReader = map (T.split (== ',')) . T.lines
 
--- CSV の各要素に "" がついてる場合
+-- For the case of each factor of CSV have ""
 csvReader' :: Csv -> [[T.Text]]
 csvReader' = map (T.split (== ',')) . T.lines . killQuot
 
 killQuot :: T.Text -> T.Text
 killQuot = T.replace  "\"" ""
 
--- 配列 -> CSV
+-- List -> CSV
 csvWriter :: [[T.Text]] -> Csv
 csvWriter = T.unlines . map (T.intercalate ", ")
