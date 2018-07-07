@@ -52,9 +52,9 @@ mkGroup cd
 --------------------------
 mkCredit :: [T.Text] -> Credit
 mkCredit xs = Credit { code  = cd
-                     , title = xs !! 3
-                     , num   = read (T.unpack $ xs !! 4) :: Float
-                     , grade = xs !! 7
+                     , title = xs !! 4
+                     , num   = read (T.unpack $ xs !! 5) :: Float
+                     , grade = xs !! 6
                      , group = mkGroup cd
                      }
   where cd = xs !! 2
