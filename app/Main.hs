@@ -2,15 +2,14 @@
 
 module Main where
 
-import           Control.Lens
+import           Control.Lens       ((^.), _2)
 import           Control.Monad      (when)
 import qualified Data.Map           as M
-import           Data.Maybe
+import           Data.Maybe         (fromJust)
 import qualified Data.Text          as T
 import qualified Data.Text.IO       as T
 import           System.Environment (getArgs)
 import           System.IO
-
 
 import           Csv
 import           Rules
@@ -108,7 +107,6 @@ judgeList credits req = map (flip (judgeGroup credits) req) $ groupList req
 -- judgeList have only True; You have enough Credits in all Groups.
 -- Then True.
 judge :: Credits -> Require -> Bool
---judge credits = all snd3 . judgeList credits
 judge credits = all (^. _2) . judgeList credits
 
 -- Result whether shuryo or not.
