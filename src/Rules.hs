@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Rules where
 
-import qualified Data.Text as T
+import           Data.List  (elemIndex)
+import           Data.Maybe (fromMaybe)
+import qualified Data.Text  as T
 
 import           Csv
 import           Types
@@ -50,11 +52,14 @@ mkGroup cd
 --------------------------
 -- Parse CSV -> Credits --
 --------------------------
-mkCredit :: [T.Text] -> Credit
-mkCredit xs = Credit { code  = cd
-                     , title = xs !! 4
-                     , num   = read (T.unpack $ xs !! 5) :: Float
-                     , grade = xs !! 6
-                     , group = mkGroup cd
-                     }
-  where cd = xs !! 2
+mkCredit :: [T.Text] -> [T.Text] -> Credit
+mkCredit ts ds = let cd = ds !! findTermIndex "科目番号"
+                 in  Credit { code  = cd
+                            , title = ds !! findTermIndex "科目名"
+                            , num   = read (T.unpack $ ds !! findTermIndex "単位数") :: Float
+                            , grade = ds !! findTermIndex "総合評価"
+                            , group = mkGroup cd
+                            }
+  where
+    findTermIndex :: T.Text -> Int
+    findTermIndex t = fromMaybe (error "Not found index") $ elemIndex t ts

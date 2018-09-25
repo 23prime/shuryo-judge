@@ -43,7 +43,8 @@ printGroupNum :: (Group, CreditNum) -> IO ()
 printGroupNum (grp, number) = T.putStrLn $ grp +.+ ": " +.+ showT number +.+ " 単位"
 
 parseCsv :: Csv -> Credits
-parseCsv = map mkCredit . tail . csvReader'
+parseCsv csv = let terms : datas = csvReader' csv
+               in map (mkCredit terms) datas
 
 ------------------------
 -- Functions for Text --
