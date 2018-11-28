@@ -1,5 +1,5 @@
 name:                shuryo-judge
-version:             0.1.0.0
+version:             0.1.0
 github:              "23prime/shuryo-judge"
 license:             BSD3
 author:              "23prime"
@@ -16,17 +16,35 @@ dependencies:
 - containers
 - text
 - lens
+- yesod
+- yesod-alerts
+- mtl
+- text
+- bytestring
+- safe-exceptions
 
 library:
   source-dirs: src
 
 executables:
-  shuryo-judge:
+  shuryo-judge-io:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    dependencies:
+    - shuryo-judge
+
+executables:
+  shuryo-judge:
+    main:                FileUpload.hs
+    source-dirs:         src
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    - -main-is FileUpload
     dependencies:
     - shuryo-judge

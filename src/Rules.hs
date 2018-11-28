@@ -1,11 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
+
 module Rules where
 
-import           Data.List  (elemIndex)
-import           Data.Maybe (fromMaybe)
-import qualified Data.Text  as T
+import           Control.Exception.Safe
+import           Data.List              (elemIndex)
+import           Data.Maybe             (fromMaybe)
+import qualified Data.Text              as T
 
-import           Csv
 import           Types
 
 type Require = [(Group, CreditNum)]
@@ -53,13 +54,18 @@ mkGroup cd
 -- Parse CSV -> Credits --
 --------------------------
 mkCredit :: [T.Text] -> [T.Text] -> Credit
-mkCredit ts ds = let cd = ds !! findTermIndex "科目番号"
-                 in  Credit { code  = cd
-                            , title = ds !! findTermIndex "科目名"
-                            , num   = read (T.unpack $ ds !! findTermIndex "単位数") :: Float
-                            , grade = ds !! findTermIndex "総合評価"
-                            , group = mkGroup cd
-                            }
+mkCredit ts ds = let cd = findData "科目番号"
+                 in Credit { code   = cd
+                           , title  = findData "科目名"
+                           , number = case reads (T.unpack $ findData "単位数") of
+                                        [(sd, "")] -> sd
+                                        _          -> 0
+                           , grade  = findData "総合評価"
+                           , group  = mkGroup cd
+                           }
   where
-    findTermIndex :: T.Text -> Int
-    findTermIndex t = fromMaybe (error "Not found index") $ elemIndex t ts
+    findData :: T.Text -> T.Text
+    findData term = let idx = elemIndex term ts
+                    in case idx of
+                         Just i -> ds !! i
+                         _      -> ""
