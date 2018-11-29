@@ -1,1 +1,1 @@
-web: env PORT=$PORT stack exec shuryo-judge
+web: env PORT=$PORT shuryo-judge
