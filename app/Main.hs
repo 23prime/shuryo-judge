@@ -10,10 +10,11 @@ module Main where
 import           Control.Applicative
 import           Control.Monad
 import qualified Data.ByteString     as B
-import           Data.Maybe
+import           Data.Maybe          (fromJust, fromMaybe)
 import qualified Data.Text           as T
 import qualified Data.Text.Encoding  as T
 import           Data.Text.Lazy      (fromStrict)
+import           System.Environment  (lookupEnv)
 import           Yesod
 
 import           Csv
@@ -110,4 +111,8 @@ postRootR = do
                   |]
 
 main :: IO ()
-main = warp 3000 File
+main = do
+  port <- fromMaybe (error "PORT number not set")
+              <$> lookupEnv "PORT"
+  let portInt = read port :: Int
+  warp portInt File
