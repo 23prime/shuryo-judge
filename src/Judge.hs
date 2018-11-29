@@ -127,11 +127,11 @@ judge cdts = all (^. _2) . judgeList cdts
 
 -- Result whether shuryo or not.
 getResult :: Credits -> Require -> T.Text
-getResult cdts req = "結果: " +.+
-  if judge cdts req
-  then "修了です"
-  else "留年！ｗ"
+getResult cdts req
+  | judge cdts req = "修了です🎉🎉🎉"
+  | otherwise      = "留年！ｗ"
 
 -- If exist Groups which have short of Credits, make there's list.
 shortList :: [(Group, Bool, CreditNum)] -> [(Group, CreditNum)]
 shortList = map (\(x, y, z) -> (x, z)) . filter (not . (^. _2))
+

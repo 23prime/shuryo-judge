@@ -30,21 +30,27 @@ instance RenderMessage File FormMessage where
 
 mkYesod "File" [parseRoutes|
 / RootR GET POST
+/favicon.ico FaviconR GET
 |]
 
---form :: Html -> MForm File File (FormResult (FileInfo, Maybe FileInfo), Widget)
 form = renderDivs $ fileAFormReq "Upload your file: "
 
 getRootR :: Handler Html
 getRootR = do
     ((_, widget), enctype) <- runFormPost form
-    defaultLayout
+    defaultLayout $ do
+      setTitle "Completation Judgment"
       [whamlet|$newline never
+<head>
+  <link rel="icon" href=@{FaviconR}>
+<body>
+<h1> 修了判定機
 <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
-    <input type=submit>
+    <input type=submit value="判定！">
 |]
+
 
 postRootR :: Handler Html
 postRootR = do
@@ -54,61 +60,81 @@ postRootR = do
             _               -> Nothing
     case msubmission of
       Nothing  ->
-        defaultLayout
-          [whamlet|$newline never
-                  $maybe file <- msubmission
-                  <form method=post enctype=#{enctype}>
-                  ^{widget}
-                  <p>
-                  <input type=submit>
-                  |]
-      Just sub -> do
-        sourceBS <- fileSourceByteString sub
-        let source = T.decodeUtf8 sourceBS
-            cdts = fromJust $ parseCsv source
-            --result = mkResult source require
-            r0 = "修了要件" :: T.Text
-            r1 = showGroupNums require
-            r2 = "計: " +.+  showT (sum $ map snd require) +.+ " 単位"
-            r3 = "あなたの修得した単位" :: T.Text
-            r4 = showGroupNums' cdts $ groupList require
-            r5 = "計: " +.+ showT (countCreditNum cdts) +.+ " 単位"
-            r6 = getResult cdts require
-            r7 = "不足 " :: T.Text
-            r8 = showGroupNums $ shortList $ judgeList cdts require
-        --mapM_ (setSuccessAlert . fromStrict) r8
         defaultLayout $ do
           setTitle "Completation Judgment"
           [whamlet|$newline never
-                  $maybe file <- msubmission
-                  <form method=post enctype=#{enctype}>
-                  ^{widget}
-                  <p>
-                  <input type=submit>
-                  <ol>
-                  <li>#{r0}</li>
-                  <div style="background-color: gainsboro; width: 300px; font-size: 12pt">
-                    <pre>#{r1}</pre></div>
-                  <br>
-                  #{r2}
-                  <br>
-                  <br>
-                  <br>
-                  <li>#{r3}</li>
-                  <div style="background-color: gainsboro; width: 300px; font-size: 12pt">
-                    <pre>#{r4}</pre></div>
-                  <br>
-                  #{r5}
-                  <br>
-                  <br>
-                  <br>
-                  <li>#{r7}</li>
-                  <div style="background-color: gainsboro; width: 300px; font-size: 12pt; color: red">
-                    <pre>
-                      #{r8}</pre></div>
-                  <br>
-                  <font size="7" color=red>#{r6}</font>
-                  |]
+$maybe file <- msubmission
+<h1>修了判定機
+<form method=post enctype=#{enctype}>
+    ^{widget}
+    <p>
+    <input type=submit value="判定！">
+|]
+
+      Just sub -> do
+        sourceBS <- fileSourceByteString sub
+        let source = T.decodeUtf8 sourceBS
+            cdts' = parseCsv source
+        case cdts' of
+          Nothing ->
+            defaultLayout $ do
+              setTitle "Completation Judgment"
+              [whamlet|$newline never
+$maybe file <- msubmission
+<h1>修了判定機
+<p>Error: 不正なファイルです．
+<p>↓もう一度試す↓
+<form method=post enctype=#{enctype}>
+    ^{widget}
+    <p>
+    <input type=submit value="判定！">
+|]
+
+          Just cdts -> do
+            let r0 = "修了要件" :: T.Text
+                r1 = showGroupNums require
+                r2 = "計: " +.+  showT (sum $ map snd require) +.+ " 単位"
+                r3 = "あなたの修得した単位" :: T.Text
+                r4 = showGroupNums' cdts $ groupList require
+                r5 = "計: " +.+ showT (countCreditNum cdts) +.+ " 単位"
+                r6 = getResult cdts require
+                r7 = "不足 " :: T.Text
+                r8 = showGroupNums $ shortList $ judgeList cdts require
+            defaultLayout $ do
+              setTitle "Completation Judgment"
+              [whamlet|$newline never
+$maybe file <- msubmission
+<h1>修了判定機</h1>
+<h2>結果：</h2>
+    <ul>
+    <li>#{r0}</li>
+    <div style="background-color: gainsboro; width: 300px; font-size: 12pt">
+      <pre>#{r1}</pre></div>
+    <br>
+    #{r2}
+    <br>
+    <br>
+    <br>
+    <li>#{r3}</li>
+    <div style="background-color: gainsboro; width: 300px; font-size: 12pt">
+      <pre>#{r4}</pre></div>
+    <br>
+    #{r5}
+    <br>
+    <br>
+    <br>
+    <li>#{r7}</li>
+    <div style="background-color: gainsboro; width: 300px; font-size: 12pt; color: red">
+      <pre>#{r8}</pre></div>
+    <br>
+    <font size="5">判定結果 → </font>
+    <font size="7" color=red>#{r6}</font>
+    |]
+
+
+getFaviconR :: Handler ()
+getFaviconR = sendFile "image/ico" "favicon.ico"
+
 
 main :: IO ()
 main = do
