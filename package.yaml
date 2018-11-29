@@ -27,7 +27,7 @@ library:
   source-dirs: src
 
 executables:
-  shuryo-judge-io:
+  shuryo-judge:
     main:                Main.hs
     source-dirs:         app
     ghc-options:
@@ -37,14 +37,13 @@ executables:
     dependencies:
     - shuryo-judge
 
-executables:
-  shuryo-judge:
-    main:                FileUpload.hs
-    source-dirs:         src
+tests:
+  shuryo-judge-test:
+    main:                Spec.hs
+    source-dirs:         test
     ghc-options:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
-    - -main-is FileUpload
     dependencies:
     - shuryo-judge
