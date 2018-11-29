@@ -1,20 +1,17 @@
-# Judgement Machine of ShuRyo
+# Judgement Machine of Completion
 
-Judging whether you can ShuRyo or not.
+Judging whether you can complete or not.
 
-:warning: Not judging you can write ShuRon or not.
+Running by [Yesod](https://www.yesodweb.com/), on [Heroku](https://jp.heroku.com/).
+
+
+:warning: Not judging you can write paper or not.
 
 ## Usage
 
-- Download `seiseki.csv` from [Twins](https://twins.tsukuba.ac.jp/campusweb/).
-- Type next.
-
-```
-$ stack exec shuryo-judge ./hoge.csv
-```
+Go to [Here](https://shuryo-judge.herokuapp.com/).
 
 - If completion requirement is changed, edit `src/Rules.hs`.
-
 
 ## About CSV data
 
