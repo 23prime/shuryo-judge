@@ -49,6 +49,14 @@ getRootR = do
     ^{widget}
     <p>
     <input type=submit value="判定！">
+<h2> Usage
+<ol>
+  <li><a href="https://twins.tsukuba.ac.jp/">Twins</a>へアクセスします．
+  <li>＜成績＞ページ下に＜ダウンロード＞があるので進みます．
+  <li>ファイル形式は "CSV"，文字コードは "Unicode" のまま＜出力＞を押します．
+  <li>ダウンロードされた CSV ファイルをアップロードし，＜判定！＞を押します．
+  <li>結果が出ます．
+  <li>もう一度判定しなおしたい場合，ブラウザの戻るボタンで戻ってください．
 |]
 
 
