@@ -39,7 +39,7 @@ getRootR :: Handler Html
 getRootR = do
     ((_, widget), enctype) <- runFormPost form
     defaultLayout $ do
-      setTitle "Completation Judgment"
+      setTitle "Completion Judgment"
       [whamlet|$newline never
 <head>
   <link rel="icon" href=@{FaviconR}>
@@ -69,7 +69,7 @@ postRootR = do
     case msubmission of
       Nothing  ->
         defaultLayout $ do
-          setTitle "Completation Judgment"
+          setTitle "Completion Judgment"
           [whamlet|$newline never
 $maybe file <- msubmission
 <h1>修了判定機
@@ -86,7 +86,7 @@ $maybe file <- msubmission
         case cdts' of
           Nothing ->
             defaultLayout $ do
-              setTitle "Completation Judgment"
+              setTitle "Completion Judgment"
               [whamlet|$newline never
 $maybe file <- msubmission
 <h1>修了判定機
@@ -109,7 +109,7 @@ $maybe file <- msubmission
                 r7 = "不足 " :: T.Text
                 r8 = showGroupNums $ shortList $ judgeList cdts require
             defaultLayout $ do
-              setTitle "Completation Judgment"
+              setTitle "Completion Judgment"
               [whamlet|$newline never
 $maybe file <- msubmission
 <h1>修了判定機</h1>
