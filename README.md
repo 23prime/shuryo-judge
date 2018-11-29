@@ -2,7 +2,7 @@
 
 Judging whether you can ShuRyo or not.
 
-- :exclamation: Not judging you can write ShuRon or not.
+:warning: Not judging you can write ShuRon or not.
 
 ## Usage
 
