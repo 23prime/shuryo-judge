@@ -51,7 +51,7 @@ getRootR = do
     <input type=submit value="判定！">
 <h2> Usage
 <ol>
-  <li><a href="https://twins.tsukuba.ac.jp/">Twins</a>へアクセスします．
+  <li><a href="https://twins.tsukuba.ac.jp/" target="_blank">Twins</a>へアクセスします．
   <li>＜成績＞ページ下に＜ダウンロード＞があるので進みます．
   <li>ファイル形式は "CSV"，文字コードは "Unicode" のまま＜出力＞を押します．
   <li>ダウンロードされた CSV ファイルをアップロードし，＜判定！＞を押します．
