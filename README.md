@@ -1,9 +1,8 @@
 # Judgement Machine of Completion
 
-Judging whether you can complete or not.
+Judging whether you can complete graduate school or not.
 
 Running by [Yesod](https://www.yesodweb.com/), on [Heroku](https://jp.heroku.com/).
-
 
 :warning: Not judging you can write paper or not.
 
@@ -31,3 +30,8 @@ Go to [Here](https://shuryo-judge.herokuapp.com/).
 - Now, ignoring "科目コード" and judging from "科目番号".
 - English ver. has different specification from Japanese, so now not supported.
 - If specification of CSV changed, then edit `mkCredit` in `src/Rules.hs`.
+
+## ToDo
+
+- [ ] Make a design decent.
+- [ ] Separate the result page.
