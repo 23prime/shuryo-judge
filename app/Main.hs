@@ -43,20 +43,22 @@ getRootR = do
       [whamlet|$newline never
 <head>
   <link rel="icon" href=@{FaviconR}>
-<body>
-<h1> 修了判定機
-<form method=post enctype=#{enctype}>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<div style="font-size: 3vw">
+  <h1>修了判定機
+  <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input type=submit value="判定！">
-<h2> Usage
-<ol>
-  <li><a href="https://twins.tsukuba.ac.jp/" target="_blank">Twins</a>へアクセスします．
-  <li>＜成績＞ページ下に＜ダウンロード＞があるので進みます．
-  <li>ファイル形式は "CSV"，文字コードは "Unicode" のまま＜出力＞を押します．
-  <li>ダウンロードされた CSV ファイルをアップロードし，＜判定！＞を押します．
-  <li>結果が出ます．
-  <li>もう一度判定しなおしたい場合，ブラウザの戻るボタンで戻ってください．
+  <h2> Usage
+  <ol>
+    <li><a href="https://twins.tsukuba.ac.jp/" target="_blank">Twins</a>へアクセスします．
+    <li>スマートフォンから利用している場合，＜PC 版＞を選択してください．
+    <li>＜成績＞ページ下に＜ダウンロード＞があるので進みます．
+    <li>ファイル形式は "CSV"，文字コードは "Unicode" のまま＜出力＞を押します．
+    <li>ダウンロードされた CSV ファイルをアップロードし，＜判定！＞を押します．
+    <li>結果が出ます．
+    <li>もう一度判定しなおしたい場合，ブラウザの戻るボタンで戻ってください．
 |]
 
 
@@ -72,8 +74,9 @@ postRootR = do
           setTitle "Completion Judgment"
           [whamlet|$newline never
 $maybe file <- msubmission
-<h1>修了判定機
-<form method=post enctype=#{enctype}>
+<div style="font-size: 3vw">
+  <h1>修了判定機
+  <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input type=submit value="判定！">
@@ -89,10 +92,11 @@ $maybe file <- msubmission
               setTitle "Completion Judgment"
               [whamlet|$newline never
 $maybe file <- msubmission
-<h1>修了判定機
-<p>Error: 不正なファイルです．
-<p>↓もう一度試す↓
-<form method=post enctype=#{enctype}>
+<div style="font-size: 3vw">
+  <h1>修了判定機
+  <p>Error: 不正なファイルです．
+  <p>↓もう一度試す↓
+  <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input type=submit value="判定！">
@@ -112,32 +116,38 @@ $maybe file <- msubmission
               setTitle "Completion Judgment"
               [whamlet|$newline never
 $maybe file <- msubmission
-<h1>修了判定機</h1>
-<h2>結果：</h2>
-    <ul>
-    <li>#{r0}</li>
-    <div style="background-color: gainsboro; width: 300px; font-size: 12pt">
-      <pre>#{r1}</pre></div>
-    <br>
-    #{r2}
-    <br>
-    <br>
-    <br>
-    <li>#{r3}</li>
-    <div style="background-color: gainsboro; width: 300px; font-size: 12pt">
-      <pre>#{r4}</pre></div>
-    <br>
-    #{r5}
-    <br>
-    <br>
-    <br>
-    <li>#{r7}</li>
-    <div style="background-color: gainsboro; width: 300px; font-size: 12pt; color: red">
-      <pre>#{r8}</pre></div>
-    <br>
-    <font size="5">判定結果 → </font>
-    <font size="7" color=red>#{r6}</font>
-    |]
+<head>
+  <link rel="icon" href=@{FaviconR}>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<div style="font-size: 3vw">
+  <h1>修了判定機</h1>
+  <h3>結果：</h3>
+  <font size="7vw" color=red>#{r6}</font>
+  <h3>詳細：</h3>
+  <ul>
+  <li>#{r0}</li>
+<div style="background-color: gainsboro; width: 100%; font-size: 3vw">
+  <pre>#{r1}</pre></div>
+<div style="font-size: 3vw">
+  <br>
+  #{r2}
+  <br>
+  <br>
+  <br>
+  <li>#{r3}</li>
+<div style="background-color: gainsboro; width: 100%; font-size: 3vw">
+  <pre>#{r4}</pre></div>
+<div style="font-size: 3vw">
+  <br>
+  #{r5}
+  <br>
+  <br>
+  <br>
+  <li>#{r7}</li>
+<div style="background-color: gainsboro; width: 100%; font-size: 3vw; color: red">
+  <pre id="pre2">#{r8}</pre></div>
+  <br>
+|]
 
 
 getFaviconR :: Handler ()
