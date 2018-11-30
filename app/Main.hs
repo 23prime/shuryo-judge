@@ -51,7 +51,8 @@ getRootR = do
   <link rel="stylesheet" href=@{CSSR}>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <body>
-  <h1>修了判定機
+  <h1>
+    修了判定機
   <form id="upload" value="ファイルを選択" method=post enctype=#{enctype} action=@{ResultR}>
     ^{widget}
     <p>
@@ -64,7 +65,6 @@ getRootR = do
     <li>ファイル形式は "CSV"，文字コードは "Unicode" のまま＜出力＞を押します．
     <li>ダウンロードされた CSV ファイルをアップロードし，＜判定！＞を押します．
     <li>結果が出ます．
-    <li>もう一度判定しなおしたい場合，ブラウザの戻るボタンで戻ってください．
 |]
 
 
@@ -83,7 +83,8 @@ $maybe file <- msubmission
 <head>
   <link rel="stylesheet" href=@{CSSR}>
 <body>
-  <h1>修了判定機
+  <h1>
+    修了判定機
   <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
@@ -103,9 +104,12 @@ $maybe file <- msubmission
 <head>
   <link rel="stylesheet" href=@{CSSR}>
 <body>
-  <h1>修了判定機
-  <p class="error">Error: 不正なファイルです．
-  <p>↓もう一度試す↓
+  <h1>
+    修了判定機
+  <p class="error">
+    Error: 不正なファイルです．
+  <p>
+    ↓もう一度試す↓
   <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
@@ -131,27 +135,35 @@ $maybe file <- msubmission
   <link rel="stylesheet" href=@{CSSR}>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <body>
-  <h1>修了判定機</h1>
-  <h3>結果</h3>
-  <font size="7vw" color=red>#{r6}</font>
-  <h3>詳細</h3>
+  <h1>
+    修了判定機
+  <h3>
+    結果
+  <p class="result">
+    #{r6}
+  <h3>
+    詳細
   <ul>
-  <li>#{r0}</li>
-  <pre id="pre1">#{r1}</pre></div>
-  <br>
+  <li>
+    #{r0}
+  <pre id="pre1">
+    #{r1}
   #{r2}
   <br>
   <br>
   <br>
-  <li>#{r3}</li>
-  <pre id="pre1">#{r4}</pre></div>
-  <br>
+  <li>
+    #{r3}
+  <pre id="pre1">
+    #{r4}
   #{r5}
   <br>
   <br>
   <br>
-  <li>#{r7}</li>
-  <pre id="pre2">#{r8}</pre></div>
+  <li>
+    #{r7}
+  <pre id="pre2">
+    #{r8}
   <br>
   <input class="back" type="button" onClick="location.href='@{RootR}'" value="戻る">
 |]
