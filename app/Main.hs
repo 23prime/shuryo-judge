@@ -28,13 +28,17 @@ instance Yesod File where
 instance RenderMessage File FormMessage where
     renderMessage _ _ = defaultFormMessage
 
+
 mkYesod "File" [parseRoutes|
 / RootR GET
-/favicon.ico FaviconR GET
 /result ResultR POST
+/favicon.ico FaviconR GET
+/main.css CSSR GET
 |]
 
+
 form = renderDivs $ fileAFormReq "Upload your file: "
+
 
 getRootR :: Handler Html
 getRootR = do
@@ -44,14 +48,15 @@ getRootR = do
       [whamlet|$newline never
 <head>
   <link rel="icon" href=@{FaviconR}>
+  <link rel="stylesheet" href=@{CSSR}>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<div style="font-size: 3vw">
+<body>
   <h1>修了判定機
-  <form method=post enctype=#{enctype} action=@{ResultR}>
+  <form id="upload" value="ファイルを選択" method=post enctype=#{enctype} action=@{ResultR}>
     ^{widget}
     <p>
-    <input type=submit value="判定！">
-  <h2> Usage
+    <input id="submit_button" type=submit value="判定！">
+  <h2 id="usage"> Usage
   <ol>
     <li><a href="https://twins.tsukuba.ac.jp/" target="_blank">Twins</a>へアクセスします．
     <li>スマートフォンから利用している場合，＜PC 版＞を選択してください．
@@ -75,12 +80,14 @@ postResultR = do
           setTitle "Completion Judgment"
           [whamlet|$newline never
 $maybe file <- msubmission
-<div style="font-size: 3vw">
+<head>
+  <link rel="stylesheet" href=@{CSSR}>
+<body>
   <h1>修了判定機
   <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
-    <input type=submit value="判定！">
+    <input id="submit_button" type=submit value="判定！">
 |]
 
       Just sub -> do
@@ -93,14 +100,16 @@ $maybe file <- msubmission
               setTitle "Completion Judgment"
               [whamlet|$newline never
 $maybe file <- msubmission
-<div style="font-size: 3vw">
+<head>
+  <link rel="stylesheet" href=@{CSSR}>
+<body>
   <h1>修了判定機
-  <p>Error: 不正なファイルです．
+  <p class="error">Error: 不正なファイルです．
   <p>↓もう一度試す↓
   <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
-    <input type=submit value="判定！">
+    <input id="submit_button" type=submit value="判定！">
 |]
 
           Just cdts -> do
@@ -119,40 +128,41 @@ $maybe file <- msubmission
 $maybe file <- msubmission
 <head>
   <link rel="icon" href=@{FaviconR}>
+  <link rel="stylesheet" href=@{CSSR}>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<div style="font-size: 3vw">
+<body>
   <h1>修了判定機</h1>
-  <h3>結果：</h3>
+  <h3>結果</h3>
   <font size="7vw" color=red>#{r6}</font>
-  <h3>詳細：</h3>
+  <h3>詳細</h3>
   <ul>
   <li>#{r0}</li>
-<div style="background-color: gainsboro; width: 100%; font-size: 3vw">
-  <pre>#{r1}</pre></div>
-<div style="font-size: 3vw">
+  <pre id="pre1">#{r1}</pre></div>
   <br>
   #{r2}
   <br>
   <br>
   <br>
   <li>#{r3}</li>
-<div style="background-color: gainsboro; width: 100%; font-size: 3vw">
-  <pre>#{r4}</pre></div>
-<div style="font-size: 3vw">
+  <pre id="pre1">#{r4}</pre></div>
   <br>
   #{r5}
   <br>
   <br>
   <br>
   <li>#{r7}</li>
-<div style="background-color: gainsboro; width: 100%; font-size: 3vw; color: red">
   <pre id="pre2">#{r8}</pre></div>
   <br>
+  <input class="back" type="button" onClick="location.href='@{RootR}'" value="戻る">
 |]
 
 
 getFaviconR :: Handler ()
 getFaviconR = sendFile "image/ico" "favicon.ico"
+
+
+getCSSR :: Handler ()
+getCSSR = sendFile "text/css" "./main.css"
 
 
 main :: IO ()
