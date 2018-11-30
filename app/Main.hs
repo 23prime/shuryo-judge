@@ -16,6 +16,7 @@ import qualified Data.Text.Encoding  as T
 import           Data.Text.Lazy      (fromStrict)
 import           System.Environment  (lookupEnv)
 import           Yesod
+import           Yesod.Alert
 
 import           Csv
 import           Judge
@@ -24,9 +25,10 @@ import           Rules
 data File = File
 
 instance Yesod File where
-    approot = ApprootStatic ""
+  approot = ApprootStatic ""
 instance RenderMessage File FormMessage where
-    renderMessage _ _ = defaultFormMessage
+  renderMessage _ _ MsgValueRequired = "↑ファイルを選択してください．"
+  renderMessage _ _ msg              = defaultFormMessage msg
 
 
 mkYesod "File" [parseRoutes|
@@ -36,7 +38,7 @@ mkYesod "File" [parseRoutes|
 /main.css CSSR GET
 |]
 
-form = renderDivs $ fileAFormReq "Upload your file: "
+form = renderDivs $ fileAFormReq ""
 
 getRootR :: Handler Html
 getRootR = do
@@ -76,32 +78,48 @@ postResultR = do
             let (name, ext) = T.breakOnEnd "." $ fileName res
             in case T.toLower ext of
               "csv" -> if name `elem` ["", "."]
-                       then Nothing
-                       else Just res
-              _     -> Nothing
-          _               -> Nothing
+                       then Left (Just res) -- When non CSV
+                       else Right res       -- When CSV
+              _     -> Left (Just res)      -- When non CSV
+          _               -> Left Nothing   -- When no Success (No file?)
+
     case msubmission of
-      Nothing  ->
+      Left Nothing ->
         defaultLayout $ do
           setTitle "Completion Judgment"
           [whamlet|$newline never
-$maybe file <- msubmission
 <head>
   <link rel="stylesheet" href=@{CSSR}>
 <body>
   <h1>
     修了判定機
-  <p class="error">
-    Error: 不正なファイルです．
-  <p>
-    ↓もう一度試す↓
   <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input id="submit_button" type=submit value="判定！">
 |]
 
-      Just res -> do
+      Left (Just res) ->
+        defaultLayout $ do
+          setTitle "Completion Judgment"
+          [whamlet|$newline never
+<head>
+  <link rel="stylesheet" href=@{CSSR}>
+<body>
+  <h1>
+    修了判定機
+  <p class="error">
+    Error: "#{fileName res}" は不正なファイルです．
+  <br>
+  <p class="retry">
+    ↓リトライ↓
+  <form method=post enctype=#{enctype}>
+    ^{widget}
+    <p>
+    <input id="submit_button" type=submit value="判定！">
+|]
+
+      Right res -> do
         sourceBS <- fileSourceByteString res
         let source = T.decodeUtf8 sourceBS
             cdts' = parseCsv source
@@ -110,16 +128,16 @@ $maybe file <- msubmission
             defaultLayout $ do
               setTitle "Completion Judgment"
               [whamlet|$newline never
-$maybe file <- msubmission
 <head>
   <link rel="stylesheet" href=@{CSSR}>
 <body>
   <h1>
     修了判定機
   <p class="error">
-    Error: 不正なファイルです．
-  <p>
-    ↓もう一度試す↓
+    Error: "#{fileName res}" は不正なファイルです．
+  <br>
+  <p class="retry">
+    ↓リトライ↓
   <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
@@ -139,7 +157,6 @@ $maybe file <- msubmission
             defaultLayout $ do
               setTitle "Completion Judgment"
               [whamlet|$newline never
-$maybe file <- msubmission
 <head>
   <link rel="icon" href=@{FaviconR}>
   <link rel="stylesheet" href=@{CSSR}>
