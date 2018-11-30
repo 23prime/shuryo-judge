@@ -29,8 +29,9 @@ instance RenderMessage File FormMessage where
     renderMessage _ _ = defaultFormMessage
 
 mkYesod "File" [parseRoutes|
-/ RootR GET POST
+/ RootR GET
 /favicon.ico FaviconR GET
+/result ResultR POST
 |]
 
 form = renderDivs $ fileAFormReq "Upload your file: "
@@ -46,7 +47,7 @@ getRootR = do
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <div style="font-size: 3vw">
   <h1>修了判定機
-  <form method=post enctype=#{enctype}>
+  <form method=post enctype=#{enctype} action=@{ResultR}>
     ^{widget}
     <p>
     <input type=submit value="判定！">
@@ -62,8 +63,8 @@ getRootR = do
 |]
 
 
-postRootR :: Handler Html
-postRootR = do
+postResultR :: Handler Html
+postResultR = do
     ((result, widget), enctype) <- runFormPost form
     let msubmission = case result of
             FormSuccess res -> Just res
