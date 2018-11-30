@@ -34,4 +34,3 @@ Go to [Here](https://shuryo-judge.herokuapp.com/).
 ## ToDo
 
 - [ ] Make a design decent.
-- [ ] Suppress accept non CSV files.

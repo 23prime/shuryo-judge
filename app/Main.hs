@@ -72,8 +72,14 @@ postResultR :: Handler Html
 postResultR = do
     ((result, widget), enctype) <- runFormPost form
     let msubmission = case result of
-            FormSuccess res -> Just res
-            _               -> Nothing
+          FormSuccess res ->
+            let (name, ext) = T.breakOnEnd "." $ fileName res
+            in case T.toLower ext of
+              "csv" -> if name `elem` ["", "."]
+                       then Nothing
+                       else Just res
+              _     -> Nothing
+          _               -> Nothing
     case msubmission of
       Nothing  ->
         defaultLayout $ do
@@ -85,14 +91,18 @@ $maybe file <- msubmission
 <body>
   <h1>
     修了判定機
+  <p class="error">
+    Error: 不正なファイルです．
+  <p>
+    ↓もう一度試す↓
   <form method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input id="submit_button" type=submit value="判定！">
 |]
 
-      Just sub -> do
-        sourceBS <- fileSourceByteString sub
+      Just res -> do
+        sourceBS <- fileSourceByteString res
         let source = T.decodeUtf8 sourceBS
             cdts' = parseCsv source
         case cdts' of
