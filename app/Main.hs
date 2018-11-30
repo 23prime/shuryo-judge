@@ -53,7 +53,7 @@ getRootR = do
 <body>
   <h1>
     修了判定機
-  <form id="upload" value="ファイルを選択" method=post enctype=#{enctype} action=@{ResultR}>
+  <form id="upload" method=post enctype=#{enctype} action=@{ResultR}>
     ^{widget}
     <p>
     <input id="submit_button" type=submit value="判定！">
@@ -93,7 +93,7 @@ postResultR = do
 <body>
   <h1>
     修了判定機
-  <form method=post enctype=#{enctype}>
+  <form id="upload" method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input id="submit_button" type=submit value="判定！">
@@ -113,7 +113,7 @@ postResultR = do
   <br>
   <p class="retry">
     ↓リトライ↓
-  <form method=post enctype=#{enctype}>
+  <form id="upload" method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input id="submit_button" type=submit value="判定！">
@@ -138,7 +138,7 @@ postResultR = do
   <br>
   <p class="retry">
     ↓リトライ↓
-  <form method=post enctype=#{enctype}>
+  <form id="upload" method=post enctype=#{enctype}>
     ^{widget}
     <p>
     <input id="submit_button" type=submit value="判定！">
