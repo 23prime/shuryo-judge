@@ -31,14 +31,12 @@ instance RenderMessage File FormMessage where
 
 mkYesod "File" [parseRoutes|
 / RootR GET
-/result ResultR POST
+/result ResultR GET POST
 /favicon.ico FaviconR GET
 /main.css CSSR GET
 |]
 
-
 form = renderDivs $ fileAFormReq "Upload your file: "
-
 
 getRootR :: Handler Html
 getRootR = do
@@ -67,6 +65,8 @@ getRootR = do
     <li>結果が出ます．
 |]
 
+getResultR :: Handler Html
+getResultR = redirect RootR
 
 postResultR :: Handler Html
 postResultR = do
@@ -168,14 +168,11 @@ $maybe file <- msubmission
   <input class="back" type="button" onClick="location.href='@{RootR}'" value="戻る">
 |]
 
-
 getFaviconR :: Handler ()
 getFaviconR = sendFile "image/ico" "favicon.ico"
 
-
 getCSSR :: Handler ()
 getCSSR = sendFile "text/css" "./main.css"
-
 
 main :: IO ()
 main = do
