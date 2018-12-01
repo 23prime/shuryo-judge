@@ -9,12 +9,11 @@ import qualified Data.Text              as T
 
 import           Types
 
-type Require = [(Group, CreditNum)]
 
 -----------
 -- Rules --
 -----------
-require :: Require
+require :: CreditMap
 require = [ ("基礎科目", 1.0)
           , ("専攻共通 必修", 1.0)
           , ("専攻共通 選択", 4.0)
@@ -24,7 +23,7 @@ require = [ ("基礎科目", 1.0)
           , ("その他", 0.0)
           ]
 
-require' :: Require
+require' :: CreditMap
 require' = [ ("基礎科目", 1.0)
            , ("専攻共通 必修", 1.0)
            , ("専攻共通 選択", 4.0)
@@ -69,3 +68,4 @@ mkCredit ts ds = let cd = findData "科目番号"
                     in case idx of
                          Just i -> ds !! i
                          _      -> ""
+

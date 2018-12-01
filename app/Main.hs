@@ -102,22 +102,7 @@ postResultR = do
       Left (Just res) ->
         defaultLayout $ do
           setTitle "Completion Judgment"
-          [whamlet|$newline never
-<head>
-  <link rel="stylesheet" href=@{CSSR}>
-<body>
-  <h1>
-    修了判定機
-  <p class="error">
-    Error: "#{fileName res}" は不正なファイルです．
-  <br>
-  <p class="retry">
-    ↓リトライ↓
-  <form id="upload" method=post enctype=#{enctype}>
-    ^{widget}
-    <p>
-    <input id="submit_button" type=submit value="判定！">
-|]
+          invalidFilePage widget enctype res
 
       Right res -> do
         sourceBS <- fileSourceByteString res
@@ -127,33 +112,23 @@ postResultR = do
           Nothing ->
             defaultLayout $ do
               setTitle "Completion Judgment"
-              [whamlet|$newline never
-<head>
-  <link rel="stylesheet" href=@{CSSR}>
-<body>
-  <h1>
-    修了判定機
-  <p class="error">
-    Error: "#{fileName res}" は不正なファイルです．
-  <br>
-  <p class="retry">
-    ↓リトライ↓
-  <form id="upload" method=post enctype=#{enctype}>
-    ^{widget}
-    <p>
-    <input id="submit_button" type=submit value="判定！">
-|]
+              invalidFilePage widget enctype res
 
           Just cdts -> do
-            let r0 = "修了要件" :: T.Text
-                r1 = showGroupNums require
-                r2 = "計: " +.+  showT (sum $ map snd require) +.+ " 単位"
-                r3 = "あなたの修得した単位" :: T.Text
-                r4 = showGroupNums' cdts $ groupList require
-                r5 = "計: " +.+ showT (countCreditNum cdts) +.+ " 単位"
-                r6 = getResult cdts require
-                r7 = "不足 " :: T.Text
-                r8 = showGroupNums $ shortList $ judgeList cdts require
+            let (got, onCourse) = showGroupNums' cdts $ groupList require
+                shorts = shortList $ judgeList False cdts require
+                r0  = "修了要件" :: T.Text
+                r1  = showGroupNums require
+                r2  = "計: " +.+  showT (sum $ map snd require) +.+ " 単位"
+                r3  = "あなたの修得した単位" :: T.Text
+                r4  = got
+                r5  = "計:" +.+ showT (fst $ countCreditNum cdts) +.+ " 単位"
+                r6  = getResult False cdts require
+                r7  = "不足" :: T.Text
+                r8  = showGroupNums shorts
+                r9  = "履修中" :: T.Text
+                r10 = onCourse
+                r11 = getResult True cdts shorts
             defaultLayout $ do
               setTitle "Completion Judgment"
               [whamlet|$newline never
@@ -168,6 +143,10 @@ postResultR = do
     結果
   <p class="result">
     #{r6}
+  <h3>
+    履修中の単位を含む結果
+  <p class="result">
+    #{r11}
   <h3>
     詳細
   <ul>
@@ -192,7 +171,29 @@ postResultR = do
   <pre id="pre2">
     #{r8}
   <br>
+  <li>
+    #{r9}
+  <pre id="pre2">
+    #{r10}
+  <br>
   <input class="back" type="button" onClick="location.href='@{RootR}'" value="戻る">
+|]
+
+invalidFilePage widget enctype res = [whamlet|$newline never
+<head>
+  <link rel="stylesheet" href=@{CSSR}>
+<body>
+  <h1>
+    修了判定機
+  <p class="error">
+    Error: "#{fileName res}" は不正なファイルです．
+  <br>
+  <p class="retry">
+    ↓リトライ↓
+  <form id="upload" method=post enctype=#{enctype}>
+    ^{widget}
+    <p>
+    <input id="submit_button" type=submit value="判定！">
 |]
 
 getFaviconR :: Handler ()

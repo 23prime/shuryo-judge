@@ -16,3 +16,5 @@ data Credit = Credit { code   :: Code
                      } deriving (Show, Eq)
 
 type Credits = [Credit]
+
+type CreditMap = [(Group, CreditNum)]
