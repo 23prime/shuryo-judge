@@ -33,21 +33,20 @@ require' = [ ("基礎科目", 1.0)
            , ("その他", 0.0)
            ]
 
-mkGroup :: Code -> Group
-mkGroup cd
-  | f /= "01B"  = "その他"
-  | a == "1001" = "基礎科目"
-  | a == "1011" = "専攻共通 必修"
-  | b == '2'    = "専攻共通 選択"
-  | b /= '6'    = "その他"
-  | c == '1'    = "教科教育（数学教育）"
-  | c == '5'    = "教科選択（研究）"
-  | otherwise   = "教科専門（数学）"
+parseCode :: Code -> Group
+parseCode cd
+  | f   /= "01B"  = "その他"
+  | s   == "1001" = "基礎科目"
+  | s   == "1011" = "専攻共通 必修"
+  | hs  == "2"    = "専攻共通 選択"
+  | hs  /= "6"    = "その他"
+  | hts == '1'    = "教科教育（数学教育）"
+  | hts == '5'    = "教科選択（研究）"
+  | otherwise     = "教科専門（数学）"
   where
-    (f, a) = T.splitAt 3 cd
-    b      = T.head a
-    cs     = T.tail a
-    c      = T.head cs
+    (f, s )  = T.splitAt 3 cd
+    (hs, ts) = T.splitAt 1 s
+    hts      = T.head ts
 
 --------------------------
 -- Parse CSV -> Credits --
@@ -60,7 +59,7 @@ mkCredit ts ds = let cd = findData "科目番号"
                                         [(sd, "")] -> sd
                                         _          -> 0
                            , grade  = findData "総合評価"
-                           , group  = mkGroup cd
+                           , group  = parseCode cd
                            }
   where
     findData :: T.Text -> T.Text
