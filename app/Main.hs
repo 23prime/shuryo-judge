@@ -57,7 +57,7 @@ defaultH1 = [whamlet|$newline never
 
 form = identifyForm "form" $ renderDivs $ areq fileField "" Nothing
 
-select = identifyForm "select" $ renderDivs af
+select = identifyForm "form" $ renderDivs af
   where
     af   = areq (selectFieldList list) "" Nothing :: AForm Handler Bool
     list = [("修得済みの単位のみ", False),("履修中の単位を含む", True)] :: [(T.Text, Bool)]
@@ -71,10 +71,6 @@ defaultForm (wgt, enc) wgt2 = [whamlet|$newline never
   <input id="submit_button" type=submit value="判定！">
 |]
 
-defaultSelect :: (Widget, Enctype) -> Widget
-defaultSelect (wgt, enc) = [whamlet|$newline never
-
-|]
 
 defaultWidgets :: (Widget, Enctype) -> Widget -> Widget
 defaultWidgets we1 wgt2 = do
