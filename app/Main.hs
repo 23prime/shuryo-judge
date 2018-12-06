@@ -32,6 +32,10 @@ instance RenderMessage File FormMessage where
   renderMessage _ _ MsgValueRequired = ""
   renderMessage _ _ msg              = defaultFormMessage msg
 
+data MyForm = MF { isInclude  :: Bool
+                 , uploadFile :: FileInfo
+                 }
+
 
 mkYesod "File" [parseRoutes|
 /favicon.ico FaviconR GET
@@ -55,28 +59,27 @@ defaultH1 = [whamlet|$newline never
   修了判定機
 |]
 
-form = identifyForm "form" $ renderDivs $ areq fileField "" Nothing
 
-select = identifyForm "form" $ renderDivs af
+form2 = renderDivs $ MF
+        <$> areq (selectFieldList list) "" Nothing
+        <*> areq fileField "" Nothing
   where
-    af   = areq (selectFieldList list) "" Nothing :: AForm Handler Bool
     list = [("修得済みの単位のみ", False),("履修中の単位を含む", True)] :: [(T.Text, Bool)]
 
 
-defaultForm :: (Widget, Enctype) -> Widget -> Widget
-defaultForm (wgt, enc) wgt2 = [whamlet|$newline never
+defaultForm :: (Widget, Enctype) -> Widget
+defaultForm (wgt, enc) = [whamlet|$newline never
 <form id="upload" method=post enctype=#{enc} action=@{ResultR}>
   ^{wgt}
   <p>
   <input id="submit_button" type=submit value="判定！">
 |]
 
-
-defaultWidgets :: (Widget, Enctype) -> Widget -> Widget
-defaultWidgets we1 wgt2 = do
+defaultWidgets :: (Widget, Enctype) -> Widget
+defaultWidgets we = do
   defaultHeader
   defaultH1
-  defaultForm we1 wgt2
+  defaultForm we
 
 usage :: Widget
 usage = [whamlet|$newline never
@@ -90,8 +93,8 @@ usage = [whamlet|$newline never
   <li>結果が出ます．
 |]
 
-invalidFilePage :: (Widget, Enctype) -> Widget -> FileInfo -> Widget
-invalidFilePage (wgt1, enc) wgt2 res = do
+invalidFilePage :: (Widget, Enctype) -> FileInfo -> Widget
+invalidFilePage (wgt1, enc) res = do
   defaultHeader
   defaultH1
   [whamlet|$newline never
@@ -101,10 +104,10 @@ invalidFilePage (wgt1, enc) wgt2 res = do
 <p class="retry">
   ↓リトライ↓
 |]
-  defaultForm (wgt1, enc) wgt2
+  defaultForm (wgt1, enc)
   usage
 
-successPage :: Credits -> FormResult Bool -> Handler Html
+successPage :: Credits -> Bool -> Handler Html
 successPage cdts bool = do
   let (got, onCourse) = showGroupNums' cdts $ groupList require
       shorts = shortList $ judgeList False cdts require
@@ -117,11 +120,7 @@ successPage cdts bool = do
 <h3>
   結果
 <p class="result">
-  #{getResult False cdts require}
-<h3>
-  履修中の単位を含む結果
-<p class="result">
-  #{getResult True cdts shorts}
+  #{getResult bool cdts require}
 <h3>
   詳細
 <ul>
@@ -163,10 +162,9 @@ getCSSR = sendFile "text/css" "./main.css"
 
 getRootR :: Handler Html
 getRootR = do
-    ((_, wgt), enc) <- runFormPost form
-    ((_, wgt2), _)  <- runFormPost select
+    ((_, wgt), enc) <- runFormPost form2
     defaultLayout $ do
-      defaultWidgets (wgt, enc) wgt2
+      defaultWidgets (wgt, enc)
       usage
 
 
@@ -175,34 +173,29 @@ getResultR = redirect RootR
 
 postResultR :: Handler Html
 postResultR = do
-    ((file, wgt1), enc) <- runFormPost form
-    ((slt, wgt2), _)    <- runFormPost select
-    let msubmission = case file of
-          FormSuccess res ->
-            let (name, ext) = T.breakOnEnd "." $ fileName res
-            in case T.toLower ext of
-              "csv" -> if name `elem` ["", "."]
-                       then Left (Just res) -- When non CSV
-                       else Right res       -- When CSV
-              _     -> Left (Just res)      -- When non CSV
-          _               -> Left Nothing   -- When no Success (No file?)
-    case msubmission of
-      Left Nothing ->
+    ((res', wgt1), enc) <- runFormPost form2
+    case res' of
+      FormSuccess res -> do
+        let FormSuccess ups = res'
+            file = uploadFile ups
+            (name, ext) = T.breakOnEnd "." $ fileName file
+        if T.toLower ext /= "csv" || name `elem` ["", "."]
+        then defaultLayout $ invalidFilePage (wgt1, enc) file
+        else do
+          sourceBS <- fileSourceByteString file
+          let source = T.decodeUtf8 sourceBS
+              cdts' = parseCsv source
+          case cdts' of
+            Nothing ->
+              defaultLayout $ invalidFilePage (wgt1, enc) file
+            Just cdts -> do
+              let FormSuccess bool = res'
+              successPage cdts $ isInclude bool
+      _               ->
         defaultLayout $ do
-          defaultWidgets (wgt1, enc) wgt2
+          defaultWidgets (wgt1, enc)
           usage
-      Left (Just res) ->
-        defaultLayout $ invalidFilePage (wgt1, enc) wgt2 res
-      Right res -> do
-        sourceBS <- fileSourceByteString res
-        let source = T.decodeUtf8 sourceBS
-            cdts' = parseCsv source
-        case cdts' of
-          Nothing ->
-            defaultLayout $ invalidFilePage (wgt1, enc) wgt2 res
-          Just cdts -> do
-            --let FormSuccess bool = slt
-            successPage cdts slt
+
 
 main :: IO ()
 main = do
