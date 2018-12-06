@@ -32,8 +32,29 @@ h3 {
     border-bottom-width: 0.1vw;
 }
 
+/* input#submit_button { */
+input {
+    padding: 1vw 2vw;
+    margin-bottom: 1vw;
+    font-size: 2vw;
+    font-weight: bold;
+    color: #fff;
+    text-shadow:0.2vw 0.2vw #555;
+    background-color: #2F7CE2;
+    border-radius: 5px;
+    border-style: none;
+    box-shadow: 0.5vw 0.5vw;
+}
+
+/* input#submit_button:hover { */
+input:hover {
+    transition: all .3s;
+    background-color: #75A5E3;
+}
+
 input#submit_button {
     padding: 1vw 4vw;
+    margin-bottom: 1vw;
     font-size: 3vw;
     font-weight: bold;
     color: #fff;
@@ -47,6 +68,42 @@ input#submit_button {
 input#submit_button:hover {
     transition: all .3s;
     background-color: #75A5E3;
+}
+
+select {
+    padding: 0.5vw 2vw;
+    margin-bottom: 1vw;
+    outline: none;
+    text-indent: 0.01px;
+    text-overflow: '';
+    vertical-align: middle;
+    font-size: 3vw;
+    color: #000;
+    background-color: #fff;
+    -webkit-appearance: none;
+    -moz-appearance: button;
+    border-style: solid;
+    border-color: #2F7CE2;
+    border-width: 0.3vw;
+    border-radius: 5px;
+    appearance: button;
+}
+
+select:hover {
+    transition: all .3s;
+    color: #555;
+    border-color: #75A5E3;
+}
+
+select option {
+    background-color: #fff;
+    color: #000;
+    border-style: solid;
+    border-color: #2F7CE2;
+}
+
+select::-ms-expand {
+    display: none;
 }
 
 pre {

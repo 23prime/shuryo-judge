@@ -32,8 +32,8 @@ instance RenderMessage File FormMessage where
   renderMessage _ _ MsgValueRequired = ""
   renderMessage _ _ msg              = defaultFormMessage msg
 
-data MyForm = MF { isInclude  :: Bool
-                 , uploadFile :: FileInfo
+data MyForm = MF { uploadFile :: FileInfo
+                 , isInclude  :: Bool
                  }
 
 
@@ -60,8 +60,8 @@ defaultH1 = [whamlet|$newline never
 |]
 
 form = renderDivs $ MF
-        <$> areq (selectFieldList list) "" Nothing
-        <*> areq fileField "" Nothing
+        <$> areq fileField "" Nothing
+        <*> areq (selectFieldList list) "" Nothing
   where
     list = [("修得済みの単位のみ", False),("履修中の単位を含む", True)] :: [(T.Text, Bool)]
 
@@ -81,13 +81,16 @@ defaultWidgets we = do
 
 usage :: Widget
 usage = [whamlet|$newline never
-<h2 id="usage"> Usage
+<h2 id="usage">
+  Usage
 <ol>
   <li><a href="https://twins.tsukuba.ac.jp/" target="_blank">Twins</a>へアクセスします．
   <li>スマートフォンから利用している場合，＜PC 版＞を選択してください．
   <li>＜成績＞ページ下に＜ダウンロード＞があるので進みます．
   <li>ファイル形式は "CSV"，文字コードは "Unicode" のまま＜出力＞を押します．
-  <li>ダウンロードされた CSV ファイルをアップロードし，＜判定！＞を押します．
+  <li>ダウンロードされた CSV ファイルを選択します．
+  <li>修得済みの単位を含めるかどうかを選択します．
+  <li>＜判定！＞を押します．
   <li>結果が出ます．
 |]
 
